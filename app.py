@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 from flask.templating import render_template
 from flask.wrappers import Response
 import redis
@@ -35,6 +35,10 @@ init_redis()
 
 @app.get("/app")
 def index():
+    key = request.args.get("key")
+    if key != "test":
+        return "invalid token"
+ 
     return render_template("index.html")
 
 
