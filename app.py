@@ -5,6 +5,8 @@ import redis
 import json
 import os
 
+from datetime import datetime
+
 REDIS_HOST = os.environ.get("REDIS_HOST", "localhost")
 REDIS_PORT = os.environ.get("REDIS_POST", 6379)
 REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", "thisispassword")
@@ -16,19 +18,18 @@ MQTT_PORT = os.environ.get("MQTT_POST", 1883)
 
 app = Flask(__name__)
 
-r = redis.Redis(
-    host=REDIS_HOST,
-    port=REDIS_PORT,
-    db=1,
-    password=REDIS_PASSWORD
-)
+r = redis.Redis(host=REDIS_HOST, port=int(REDIS_PORT), db=1, password=REDIS_PASSWORD)
 
 
 def init_redis():
     r.set("count", 0)
-    r.set("control", "stop")
+    r.set("kpm", 0)
+    r.set("control", "stop", )
     print("initial redis...")
 
+def update_kpm():
+    now = datetime.now()
+    print(now)
 
 init_redis()
 
@@ -38,8 +39,8 @@ def index():
     key = request.args.get("key")
     if key != "test":
         return "invalid token"
- 
-    return render_template("index.html")
+
+    return render_template("app.html")
 
 
 @app.get("/green")
@@ -49,10 +50,19 @@ def green():
 
 @app.get("/")
 def home():
-    # key = request.args.get("key")
-    # if key != "test":
-    # return "invalid token"
-    return render_template("app.html")
+    return render_template("display.html")
+
+@app.post("/keypress")
+def kpm():
+    request_data = request.get_json()
+
+    r.set("kpm", request_data["kpm"])
+
+    print(request_data)
+
+    return {
+        "success": True,
+    }
 
 
 @app.get("/stream")
@@ -62,38 +72,35 @@ def stream():
             # time.sleep(0.5)
             count = r.get("count")
             control = r.get("control")
+            kpm = r.get("kpm")
             ret = {
                 "count": count.decode("utf-8"),
-                "control": control.decode("utf-8")
+                "control": control.decode("utf-8"),
+                "kpm": kpm.decode("utf-8"),
             }
 
-            yield f'data: {json.dumps(ret)}\n\n'
+            yield f"data: {json.dumps(ret)}\n\n"
 
-    return Response(get_data(), mimetype='text/event-stream')
+    return Response(get_data(), mimetype="text/event-stream")
 
 
 @app.post("/increase")
 def increase():
     r.incr("count")
-    return {
-        "status": "increase"
-    }
+    update_kpm()
+    return {"status": "increase"}
 
 
 @app.post("/decrease")
 def decrease():
     r.decr("count")
-    return {
-        "status": "decrease"
-    }
+    return {"status": "decrease"}
 
 
 @app.post("/reset")
 def reset_counter():
     r.set("count", 0)
-    return {
-        "status": "reset"
-    }
+    return {"status": "reset"}
 
 
 @app.post("/set/<num>")

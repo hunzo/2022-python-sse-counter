@@ -1,8 +1,7 @@
-
-const sse = new EventSource('/stream')
+const sse = new EventSource("/stream")
 
 sse.addEventListener(
-  'message',
+  "message",
   (e) => {
     var data = JSON.parse(e.data)
     let counter = document.querySelector("#counter")
@@ -13,97 +12,119 @@ sse.addEventListener(
     // status.innerText = data.control
     // data.control == "stop" ? status.style.background = "red" : status.style.background = "green"
   },
-  false
+  false,
 )
 
-document.body.onkeyup = function (e) {
-  console.log(e)
+const incFx = async () => {
+  let respone = await fetch("/increase", {
+    "method": "post",
+  })
 
-  if (e.key == " " ||
+  return await respone.json()
+}
+
+document.body.onkeyup = function (e) {
+  if (
+    e.key == " " ||
     e.code == "Space" ||
     e.keyCode == 32
   ) {
-    fetch('/increase', {
-      "method": "post"
-    })
-      .then(res => res.json())
-      .then(data => console.log(data))
-  }
 
+    incFx()
+    .then(x => {
+        console.log(x)
+      })
+    
+    
+    //
+    // fetch("/increase", {
+    //   "method": "post",
+    // })
+    //   .then((res) => res.json())
+    //   .then( async () => {
+    //     await fetch("/keypress", {
+    //       "method": "post",
+    //     })
+    //       .then((res) => res.json())
+    //       .then((data) => {
+    //         console.log("key press")
+    //       })
+    //   })
+  }
 
   if (
     e.code == "Backspace" ||
     e.keyCode == 8
   ) {
-    fetch('/decrease', {
-      "method": "post"
+    fetch("/decrease", {
+      "method": "post",
     })
-      .then(res => res.json())
-      .then(data => console.log(data))
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(`call count ${data}`)
+      })
   }
-
 }
 
 const start = () => {
   console.log("start")
-  fetch('/start', {
-    "method": "post"
+  fetch("/start", {
+    "method": "post",
   })
-    .then(res => res.json())
-    .then(data => console.log(data))
+    .then((res) => res.json())
+    .then((data) => console.log(data))
 }
 
 const stop = () => {
   console.log("stop")
-  fetch('/stop', {
-    "method": "post"
+  fetch("/stop", {
+    "method": "post",
   })
-    .then(res => res.json())
-    .then(data => console.log(data))
+    .then((res) => res.json())
+    .then((data) => console.log(data))
 }
 
 const increase = () => {
   console.log("increase")
-  fetch('/increase', {
-    "method": "post"
+  fetch("/increase", {
+    "method": "post",
   })
-    .then(res => res.json())
-    .then(data => console.log(data))
+    .then((res) => res.json())
+    .then((data) => console.log(data))
 }
 
 const decrease = () => {
   console.log("decrease")
-  fetch('/decrease', {
-    "method": "post"
+  fetch("/decrease", {
+    "method": "post",
   })
-    .then(res => res.json())
-    .then(data => console.log(data))
+    .then((res) => res.json())
+    .then((data) => console.log(data))
 }
 
 const reset = () => {
   console.log("reset")
-  const q = prompt('Reset Counter ?')
+  const q = prompt("Reset Counter ?")
   if (!q) {
     alert(`Please enter "yes" to reset Counter:`)
     return
   }
-  fetch('/reset', {
-    "method": "post"
+  fetch("/reset", {
+    "method": "post",
   })
-    .then(res => res.json())
-    .then(data => console.log(data))
+    .then((res) => res.json())
+    .then((data) => console.log(data))
 }
 
 const setCounter = () => {
   counter = prompt("set counter")
   if (!counter) {
-    alter('Please enter your counter of exit')
+    alter("Please enter your counter of exit")
     return
   }
   fetch(`/set/${counter}`, {
-    "method": "post"
+    "method": "post",
   })
-    .then(res => res.json())
-    .then(data => console.log(data))
-
+    .then((res) => res.json())
+    .then((data) => console.log(data))
 }
