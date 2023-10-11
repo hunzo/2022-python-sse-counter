@@ -22,7 +22,7 @@ function updateKPM() {
   // fetch to update redis
   let key_per_minutes = kpm.toFixed(2)
   document.getElementById("kpmDisplay").textContent =
-    `COUNT_PER_MINUTES: ${key_per_minutes}`
+    `count per minutes: ${key_per_minutes}`
   return key_per_minutes
 }
 
@@ -35,7 +35,6 @@ document.addEventListener("keydown", function () {
     setInterval(() => {
       KPPM = updateKPM()
     }, 1000) // Update KPM every second
-    // setInterval(updateKPM, 1000) // Update KPM every second
   }
 
   fetch("/keypress", {
@@ -44,7 +43,7 @@ document.addEventListener("keydown", function () {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      "kpm": KPPM
+      "kpm": KPPM,
     }),
   })
     .then((res) => res.json())
@@ -53,8 +52,8 @@ document.addEventListener("keydown", function () {
       console.log(e)
     })
 
-  console.log(KPPM)
-
   // Increment key press count
   keyPresses++
+  console.log(`key press count: ${keyPresses}`)
+  console.log(`key press per minitues: ${KPPM}`)
 })

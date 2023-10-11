@@ -18,7 +18,8 @@ MQTT_PORT = os.environ.get("MQTT_POST", 1883)
 
 app = Flask(__name__)
 
-r = redis.Redis(host=REDIS_HOST, port=int(REDIS_PORT), db=1, password=REDIS_PASSWORD)
+r = redis.Redis(host=REDIS_HOST, port=int(
+    REDIS_PORT), db=1, password=REDIS_PASSWORD)
 
 
 def init_redis():
@@ -27,11 +28,23 @@ def init_redis():
     r.set("control", "stop", )
     print("initial redis...")
 
+
 def update_kpm():
     now = datetime.now()
     print(now)
 
+
 init_redis()
+
+
+@app.get("/")
+def home():
+    return render_template("display.html")
+
+
+@app.get("/green")
+def green():
+    return render_template("green.html")
 
 
 @app.get("/app")
@@ -43,25 +56,17 @@ def index():
     return render_template("app.html")
 
 
-@app.get("/green")
-def green():
-    return render_template("green.html")
-
-
-@app.get("/")
-def home():
-    return render_template("display.html")
-
 @app.post("/keypress")
 def kpm():
     request_data = request.get_json()
+    assert request_data is not None
 
     r.set("kpm", request_data["kpm"])
 
     print(request_data)
 
     return {
-        "success": True,
+        "success": "set_key_per_minutes",
     }
 
 
@@ -73,6 +78,11 @@ def stream():
             count = r.get("count")
             control = r.get("control")
             kpm = r.get("kpm")
+
+            assert count is not None
+            assert control is not None
+            assert kpm is not None
+
             ret = {
                 "count": count.decode("utf-8"),
                 "control": control.decode("utf-8"),

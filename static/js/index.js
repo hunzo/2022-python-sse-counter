@@ -6,11 +6,6 @@ sse.addEventListener(
     var data = JSON.parse(e.data)
     let counter = document.querySelector("#counter")
     counter.innerText = data.count
-    // let status = document.querySelector("#control-status")
-    // console.log(data.control)
-    // console.log(status.innerText)
-    // status.innerText = data.control
-    // data.control == "stop" ? status.style.background = "red" : status.style.background = "green"
   },
   false,
 )
@@ -34,22 +29,6 @@ document.body.onkeyup = function (e) {
     .then(x => {
         console.log(x)
       })
-    
-    
-    //
-    // fetch("/increase", {
-    //   "method": "post",
-    // })
-    //   .then((res) => res.json())
-    //   .then( async () => {
-    //     await fetch("/keypress", {
-    //       "method": "post",
-    //     })
-    //       .then((res) => res.json())
-    //       .then((data) => {
-    //         console.log("key press")
-    //       })
-    //   })
   }
 
   if (
