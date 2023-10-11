@@ -6,6 +6,8 @@ services:
       - 80:8000
     env_file:
       - .env
+    environment:
+      - REDIS_HOST=redis
     restart: always
     networks:
       - redis-net

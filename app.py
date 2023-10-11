@@ -12,6 +12,8 @@ REDIS_PORT = os.environ.get("REDIS_POST", 6379)
 REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", "thisispassword")
 KEEP_ALIVE = 1
 
+
+
 MQTT_HOST = os.environ.get("MQTT_HOST", "localhost")
 MQTT_PORT = os.environ.get("MQTT_POST", 1883)
 
