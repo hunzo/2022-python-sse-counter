@@ -1,17 +1,21 @@
+"""
+Counter Application
+"""
+
+import json
+import os
+from datetime import datetime
+
 from flask import Flask, request
 from flask.templating import render_template
 from flask.wrappers import Response
-import redis
-import json
-import os
 
-from datetime import datetime
+import redis
 
 REDIS_HOST = os.environ.get("REDIS_HOST", "localhost")
 REDIS_PORT = os.environ.get("REDIS_POST", 6379)
 REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", "thisispassword")
 KEEP_ALIVE = 1
-
 
 
 MQTT_HOST = os.environ.get("MQTT_HOST", "localhost")
@@ -25,6 +29,9 @@ r = redis.Redis(host=REDIS_HOST, port=int(
 
 
 def init_redis():
+    """
+    initial function fo redis
+    """
     r.set("count", 0)
     r.set("kpm", 0)
     r.set("control", "stop", )
@@ -32,6 +39,9 @@ def init_redis():
 
 
 def update_kpm():
+    """
+    Update key press per minutes
+    """
     now = datetime.now()
     print(now)
 
@@ -41,18 +51,27 @@ init_redis()
 
 @app.get("/")
 def home():
+    """
+    home page
+    """
     return render_template("display.html")
 
 
 @app.get("/green")
 def green():
+    """
+    green display
+    """
     return render_template("green.html")
 
 
 @app.get("/app")
 def index():
+    """
+    Application Page
+    """
     key = request.args.get("key")
-    if key != "test":
+    if key != "thisisabook2024":
         return "invalid token"
 
     return render_template("app.html")
@@ -60,6 +79,9 @@ def index():
 
 @app.post("/keypress")
 def kpm():
+    """
+    on key press api
+    """
     request_data = request.get_json()
     assert request_data is not None
 
@@ -72,23 +94,41 @@ def kpm():
     }
 
 
+@app.get("/resetkpm")
+def reset_kpm():
+    """
+    reset key per minutes
+    """
+
+    r.set("kpm", 0)
+
+    print("reset kpm")
+
+    return {
+        "message": "reset key per minutes"
+    }
+
+
 @app.get("/stream")
 def stream():
+    """
+    stream server data to pages
+    """
     def get_data():
         while True:
             # time.sleep(0.5)
             count = r.get("count")
             control = r.get("control")
-            kpm = r.get("kpm")
+            key_per_minutes = r.get("kpm")
 
             assert count is not None
             assert control is not None
-            assert kpm is not None
+            assert key_per_minutes is not None
 
             ret = {
                 "count": count.decode("utf-8"),
                 "control": control.decode("utf-8"),
-                "kpm": kpm.decode("utf-8"),
+                "kpm": key_per_minutes.decode("utf-8"),
             }
 
             yield f"data: {json.dumps(ret)}\n\n"
@@ -98,6 +138,9 @@ def stream():
 
 @app.post("/increase")
 def increase():
+    """
+    increment counter api
+    """
     r.incr("count")
     update_kpm()
     return {"status": "increase"}
@@ -105,19 +148,29 @@ def increase():
 
 @app.post("/decrease")
 def decrease():
+    """
+    decrement counter api
+    """
     r.decr("count")
     return {"status": "decrease"}
 
 
 @app.post("/reset")
 def reset_counter():
+    """
+    reset counter
+    """
     r.set("count", 0)
-    return {"status": "reset"}
+    return {"status": "reset counter"}
 
 
 @app.post("/set/<num>")
 def set_counter(num):
+    """
+    force set counter
+    """
     r.set("count", num)
+    update_kpm()
     return {
         "status": num,
     }
