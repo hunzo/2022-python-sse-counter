@@ -15,6 +15,7 @@ import redis
 REDIS_HOST = os.environ.get("REDIS_HOST", "localhost")
 REDIS_PORT = os.environ.get("REDIS_POST", 6379)
 REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", "thisispassword")
+APIKEY = os.environ.get("APIKEY", "thisisapikey")
 KEEP_ALIVE = 1
 
 
@@ -71,7 +72,7 @@ def index():
     Application Page
     """
     key = request.args.get("key")
-    if key != "thisisabook2024":
+    if key != APIKEY:
         return "invalid token"
 
     return render_template("app.html")

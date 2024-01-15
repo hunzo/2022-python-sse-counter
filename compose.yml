@@ -8,6 +8,7 @@ services:
       - .env
     environment:
       - REDIS_HOST=redis
+      - APIKEY=ThisIsABook
     restart: always
     networks:
       - redis-net
