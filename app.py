@@ -161,6 +161,7 @@ def decrease():
     decrement counter api
     """
     r.decr("count")
+    update_kpm()
     return {"status": "decrease"}
 
 
@@ -170,6 +171,7 @@ def reset_counter():
     reset counter
     """
     r.set("count", 0)
+    update_kpm()
     return {"status": "reset counter"}
 
 
