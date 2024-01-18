@@ -66,6 +66,14 @@ def green():
     return render_template("green.html")
 
 
+@app.get("/g2")
+def green_2():
+    """
+    green display
+    """
+    return render_template("green-2.html")
+
+
 @app.get("/app")
 def index():
     """
